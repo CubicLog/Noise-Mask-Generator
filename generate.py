@@ -86,7 +86,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["input=", "output=", "mask-color=", "shades="])
+        opts, args = getopt.getopt(sys.argv[1:], "i:o:", ["input=", "output=", "mask-color=", "shades=", "scale=", "seed=", "tolerance="])
     except getopt.GetoptError as e:
         print(f"Error: {e}")
         sys.exit(1)
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     shades = None
     tolerance = 5
     scale = 0.50
-    seed = 1234
+    seed = int(np.random.default_rng().integers(0, 2**32))
     
     # parse args
     for opt, arg in opts:
@@ -115,6 +115,24 @@ if __name__ == "__main__":
                 shades = [parse_color(c) for c in arg.split(",")]
                 if len(shades) == 0:
                     print("Err: At least 1 color for --shades must be provided")
+                    sys.exit(1)
+            elif opt == "--scale":
+                try:
+                    scale = float(arg)
+                except ValueError:
+                    print("Err: --scale must be a float")
+                    sys.exit(1)
+            elif opt == "--seed":
+                try:
+                    seed = int(arg)
+                except ValueError:
+                    print("Err: --seed must be an integer")
+                    sys.exit(1)
+            elif opt == "--tolerance":
+                try:
+                    tolerance = int(arg)
+                except ValueError:
+                    print("Err: --tolerance must be an integer")
                     sys.exit(1)
         except ValueError:
             print(f"Invalid color: '{arg}'")
